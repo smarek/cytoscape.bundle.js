@@ -1,5 +1,4 @@
 {
-  "name": "cytoscape-package",
   "dependencies": {
     "cytoscape": "^3.17.1",
     "cytoscape-cise": "^1.0.0",
