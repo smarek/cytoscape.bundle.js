@@ -1,11 +1,10 @@
+const webpack = require('webpack');
+
 module.exports = {
   mode: 'production',
-  resolve: {
-    modules: ['node_modules'],
-    extensions: ['.js', '.json', '.ts', '.jsx', '.css']
-  },
   optimization: {
     minimize: false,
+    mangleExports: false,
   },
   output: {
     filename: 'cytoscape.bundle.js'
