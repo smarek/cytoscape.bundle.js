@@ -1,7 +1,12 @@
-import * as cytoscape from 'cytoscape'
-import * as cytoscape_cise from 'cytoscape-cise'
-import * as cytoscape_dagre from 'cytoscape-dagre'
-import * as cytoscape_col from 'cytoscape-cola'
-import * as cytoscape_klay from 'cytoscape-klay'
+import * as cytoscape_core from 'cytoscape'
+import * as layout_cise from 'cytoscape-cise'
+import * as layout_dagre from 'cytoscape-dagre'
+import * as layout_cola from 'cytoscape-cola'
+import * as layout_klay from 'cytoscape-klay'
 
-globalThis.cytoscape = cytoscape
+cytoscape.use(layout_cise, 'cise')
+cytoscape.use(layout_dagre, 'dagre')
+cytoscape.use(layout_cola, 'cola')
+cytoscape.use(layout_klay, 'klay')
+
+globalThis.cytoscape = cytoscape_core.default
