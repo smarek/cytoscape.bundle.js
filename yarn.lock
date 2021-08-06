@@ -25,9 +25,9 @@ cytoscape-cise@^1.0.0:
     cose-base "^1.0.0"
 
 cytoscape-cola@^2.4.0:
-  version "2.4.0"
-  resolved "https://registry.yarnpkg.com/cytoscape-cola/-/cytoscape-cola-2.4.0.tgz#3e21491f99f0a776a894faf87a2fc7c7e6cf4534"
-  integrity sha512-zY029SIMi08DRSZatC3oQD7e77ufvkXMiLHmex6Tv2U9F1Qn/+CrQQtjry32VQEYcj0jKj6W/YCH2T+samrCHw==
+  version "2.5.0"
+  resolved "https://registry.yarnpkg.com/cytoscape-cola/-/cytoscape-cola-2.5.0.tgz#7365d9dfc1a577dd068232093f2f00147c0c0155"
+  integrity sha512-TCpzO+e7H7Bhi2uiAi2Nq7gFwcSGkffe1J6uQ7Dsx6SLN9OhIzrQkBkV6m8kHzar+flVbP76RwxAa2y97jdphA==
   dependencies:
     webcola "^3.4.0"
 
@@ -54,9 +54,9 @@ cytoscape-markov-cluster@cytoscape/cytoscape.js-markov-cluster:
   resolved "https://codeload.github.com/cytoscape/cytoscape.js-markov-cluster/tar.gz/7be4cfeb6a7f55c83a06d77f21cc79db4628d024"
 
 cytoscape@^3.17.1:
-  version "3.17.1"
-  resolved "https://registry.yarnpkg.com/cytoscape/-/cytoscape-3.17.1.tgz#da2dd84035db1bcfcff84989ff87f3f841ea01cc"
-  integrity sha512-66jNdRnRxIS4IE+EOax6ElhQcwK8VHmcsbGtDJ4YeuDGLRr5HLotCgeTCAIzpYt6V9CuaTuvhkSkie83wUqhxg==
+  version "3.19.0"
+  resolved "https://registry.yarnpkg.com/cytoscape/-/cytoscape-3.19.0.tgz#b3e3136f823ca00a1c7752741c2a349e52545f57"
+  integrity sha512-DANM8bM4EuSTS3DraPK0nLSmzANrzQ2g/cb3u5Biexu/NVsJA+xAoXVvWHRIHDXz3y0gpMjTPv3Z13ZbkNrEPw==
   dependencies:
     heap "^0.2.6"
     lodash.debounce "^4.0.8"
@@ -132,9 +132,9 @@ lodash.debounce@^4.0.8:
   integrity sha1-gteb/zCmfEAF/9XiUVMArZyk168=
 
 lodash@^4.17.15:
-  version "4.17.20"
-  resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.20.tgz#b44a9b6297bcb698f1c51a3545a2b3b368d59c52"
-  integrity sha512-PlhdFcillOINfeV7Ni6oF1TAEayyZBoZ8bcshTHqOYJYlrqzRK5hagpagky5o4HfCzzd1TRkXPMFq6cKk9rGmA==
+  version "4.17.21"
+  resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.21.tgz#679591c564c3bffaae8454cf0b3df370c3d6911c"
+  integrity sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==
 
 webcola@^3.4.0:
   version "3.4.0"
