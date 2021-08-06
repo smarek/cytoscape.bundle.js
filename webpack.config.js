@@ -1,7 +1,7 @@
 const webpack = require('webpack');
 
-module.exports = {
-  mode: 'production',
+const unminified = {
+  mode: 'development',
   optimization: {
     minimize: false,
     mangleExports: false,
@@ -10,3 +10,16 @@ module.exports = {
     filename: 'cytoscape.bundle.js'
   }
 }
+
+const minified = {
+  ...unminified,
+  mode: 'production',
+  optimization: {
+    minimize: true,
+  },
+  output: {
+    filename: 'cytoscape.bundle.min.js'
+  }
+}
+
+module.exports = [unminified, minified]
