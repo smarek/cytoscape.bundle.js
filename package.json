@@ -4,6 +4,8 @@
     "cytoscape-cise": "^1.0.0",
     "cytoscape-cola": "^2.4.0",
     "cytoscape-dagre": "^2.3.2",
-    "cytoscape-klay": "^3.1.4"
+    "cytoscape-hierarchical": "cytoscape/cytoscape.js-hierarchical",
+    "cytoscape-klay": "^3.1.4",
+    "cytoscape-markov-cluster": "cytoscape/cytoscape.js-markov-cluster"
   }
 }

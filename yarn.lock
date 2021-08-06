@@ -38,12 +38,20 @@ cytoscape-dagre@^2.3.2:
   dependencies:
     dagre "^0.8.5"
 
+cytoscape-hierarchical@cytoscape/cytoscape.js-hierarchical:
+  version "0.0.0"
+  resolved "https://codeload.github.com/cytoscape/cytoscape.js-hierarchical/tar.gz/7af700fdadd63bd85720eed4db60874440428b4b"
+
 cytoscape-klay@^3.1.4:
   version "3.1.4"
   resolved "https://registry.yarnpkg.com/cytoscape-klay/-/cytoscape-klay-3.1.4.tgz#0e5bbb5c482b384b2ff2485150173aaecebc324b"
   integrity sha512-VwPj0VR25GPfy6qXVQRi/MYlZM/zkdvRhHlgqbM//lSvstgM6fhp3ik/uM8Wr8nlhskfqz/M1fIDmR6UckbS2A==
   dependencies:
     klayjs "^0.4.1"
+
+cytoscape-markov-cluster@cytoscape/cytoscape.js-markov-cluster:
+  version "0.0.0"
+  resolved "https://codeload.github.com/cytoscape/cytoscape.js-markov-cluster/tar.gz/7be4cfeb6a7f55c83a06d77f21cc79db4628d024"
 
 cytoscape@^3.17.1:
   version "3.17.1"

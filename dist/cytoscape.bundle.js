@@ -77649,16 +77649,477 @@
     });
   });
 
+  // node_modules/cytoscape-hierarchical/cytoscape-hierarchical.js
+  var require_cytoscape_hierarchical = __commonJS((exports, module) => {
+    (function() {
+      "use strict";
+      var defaults = {
+        distance: "euclidean",
+        linkage: "single",
+        threshold: 10,
+        mode: "regular",
+        cutoff: 0,
+        attributes: [
+          function(node) {
+            return node.position("x");
+          },
+          function(node) {
+            return node.position("y");
+          }
+        ],
+        testMode: false
+      };
+      var setOptions = function(opts, options) {
+        for (var i in defaults) {
+          opts[i] = defaults[i];
+        }
+        for (var i in options) {
+          opts[i] = options[i];
+        }
+      };
+      var distances = {
+        euclidean: function(n1, n2, attributes) {
+          var total = 0;
+          for (var dim = 0; dim < attributes.length; dim++) {
+            total += Math.pow(attributes[dim](n1) - attributes[dim](n2), 2);
+          }
+          return Math.sqrt(total);
+        },
+        manhattan: function(n1, n2, attributes) {
+          var total = 0;
+          for (var dim = 0; dim < attributes.length; dim++) {
+            total += Math.abs(attributes[dim](n1) - attributes[dim](n2));
+          }
+          return total;
+        },
+        max: function(n1, n2, attributes) {
+          var max = 0;
+          for (var dim = 0; dim < attributes.length; dim++) {
+            max = Math.max(max, Math.abs(attributes[dim](n1) - attributes[dim](n2)));
+          }
+          return max;
+        }
+      };
+      var mergeClosest = function(clusters, index, dists, mins, opts) {
+        var minKey = 0;
+        var min = Infinity;
+        for (var i = 0; i < clusters.length; i++) {
+          var key = clusters[i].key;
+          var dist = dists[key][mins[key]];
+          if (dist < min) {
+            minKey = key;
+            min = dist;
+          }
+        }
+        if (opts.mode === "regular" && min >= opts.threshold || opts.mode === "dendrogram" && clusters.length === 1) {
+          return false;
+        }
+        var c1 = index[minKey];
+        var c2 = index[mins[minKey]];
+        if (opts.mode === "dendrogram") {
+          var merged = {
+            left: c1,
+            right: c2,
+            key: c1.key
+          };
+        } else {
+          var merged = {
+            value: c1.value.concat(c2.value),
+            key: c1.key
+          };
+        }
+        clusters[c1.index] = merged;
+        clusters.splice(c2.index, 1);
+        index[c1.key] = merged;
+        for (var i = 0; i < clusters.length; i++) {
+          var cur = clusters[i];
+          if (c1.key === cur.key) {
+            dist = Infinity;
+          } else if (opts.linkage === "single") {
+            dist = dists[c1.key][cur.key];
+            if (dists[c1.key][cur.key] > dists[c2.key][cur.key]) {
+              dist = dists[c2.key][cur.key];
+            }
+          } else if (opts.linkage === "complete") {
+            dist = dists[c1.key][cur.key];
+            if (dists[c1.key][cur.key] < dists[c2.key][cur.key]) {
+              dist = dists[c2.key][cur.key];
+            }
+          } else if (opts.linkage === "average") {
+            dist = (dists[c1.key][cur.key] * c1.size + dists[c2.key][cur.key] * c2.size) / (c1.size + c2.size);
+          } else {
+            if (opts.mode === "dendrogram")
+              dist = distances[opts.distance](cur.value, c1.value, opts.attributes);
+            else
+              dist = distances[opts.distance](cur.value[0], c1.value[0], opts.attributes);
+          }
+          dists[c1.key][cur.key] = dists[cur.key][c1.key] = dist;
+        }
+        for (var i = 0; i < clusters.length; i++) {
+          var key1 = clusters[i].key;
+          if (mins[key1] === c1.key || mins[key1] === c2.key) {
+            var min = key1;
+            for (var j = 0; j < clusters.length; j++) {
+              var key2 = clusters[j].key;
+              if (dists[key1][key2] < dists[key1][min]) {
+                min = key2;
+              }
+            }
+            mins[key1] = min;
+          }
+          clusters[i].index = i;
+        }
+        delete c1.key;
+        delete c2.key;
+        delete c1.index;
+        delete c2.index;
+        return true;
+      };
+      var getAllChildren = function(root, arr, cy) {
+        if (!root)
+          return;
+        if (root.value) {
+          arr.push(root.value);
+        } else {
+          if (root.left)
+            getAllChildren(root.left, arr, cy);
+          if (root.right)
+            getAllChildren(root.right, arr, cy);
+        }
+      };
+      var buildDendrogram = function(root, cy) {
+        if (!root)
+          return "";
+        if (root.left && root.right) {
+          var leftStr = buildDendrogram(root.left, cy);
+          var rightStr = buildDendrogram(root.right, cy);
+          var node = cy.add({group: "nodes", data: {id: leftStr + "," + rightStr}});
+          cy.add({group: "edges", data: {source: leftStr, target: node.id()}});
+          cy.add({group: "edges", data: {source: rightStr, target: node.id()}});
+          return node.id();
+        } else if (root.value) {
+          return root.value.id();
+        }
+      };
+      var buildClustersFromTree = function(root, k, cy) {
+        if (!root)
+          return [];
+        var left = [], right = [], leaves = [];
+        if (k === 0) {
+          if (root.left)
+            getAllChildren(root.left, left, cy);
+          if (root.right)
+            getAllChildren(root.right, right, cy);
+          leaves = left.concat(right);
+          return [cy.collection(leaves)];
+        } else if (k === 1) {
+          if (root.value) {
+            return [cy.collection(root.value)];
+          } else {
+            if (root.left)
+              getAllChildren(root.left, left, cy);
+            if (root.right)
+              getAllChildren(root.right, right, cy);
+            return [cy.collection(left), cy.collection(right)];
+          }
+        } else {
+          if (root.value) {
+            return [cy.collection(root.value)];
+          } else {
+            if (root.left)
+              left = buildClustersFromTree(root.left, k - 1, cy);
+            if (root.right)
+              right = buildClustersFromTree(root.right, k - 1, cy);
+            return left.concat(right);
+          }
+        }
+      };
+      var printMatrix = function(M) {
+        var n = M.length;
+        for (var i = 0; i < n; i++) {
+          var row = "";
+          for (var j = 0; j < n; j++) {
+            row += Math.round(M[i][j] * 100) / 100 + " ";
+          }
+          console.log(row);
+        }
+        console.log("");
+      };
+      var hierarchical2 = function(options) {
+        var cy = this.cy();
+        var nodes = this.nodes();
+        var opts = {};
+        setOptions(opts, options);
+        var clusters = [];
+        var dists = [];
+        var mins = [];
+        var index = [];
+        for (var n = 0; n < nodes.length; n++) {
+          var cluster = {
+            value: opts.mode === "dendrogram" ? nodes[n] : [nodes[n]],
+            key: n,
+            index: n
+          };
+          clusters[n] = cluster;
+          index[n] = cluster;
+          dists[n] = [];
+          mins[n] = 0;
+        }
+        for (var i = 0; i < clusters.length; i++) {
+          for (var j = 0; j <= i; j++) {
+            if (opts.mode === "dendrogram")
+              var dist = i === j ? Infinity : distances[opts.distance](clusters[i].value, clusters[j].value, opts.attributes);
+            else
+              var dist = i === j ? Infinity : distances[opts.distance](clusters[i].value[0], clusters[j].value[0], opts.attributes);
+            dists[i][j] = dist;
+            dists[j][i] = dist;
+            if (dist < dists[i][mins[i]]) {
+              mins[i] = j;
+            }
+          }
+        }
+        var merged = mergeClosest(clusters, index, dists, mins, opts);
+        while (merged) {
+          merged = mergeClosest(clusters, index, dists, mins, opts);
+        }
+        if (opts.mode === "dendrogram") {
+          var retClusters = buildClustersFromTree(clusters[0], opts.cutoff, cy);
+          if (!opts.testMode)
+            buildDendrogram(clusters[0], cy);
+        } else {
+          var retClusters = new Array(clusters.length);
+          clusters.forEach(function(cluster2, i2) {
+            delete cluster2.key;
+            delete cluster2.index;
+            retClusters[i2] = cy.collection(cluster2.value);
+          });
+        }
+        return retClusters;
+      };
+      var register = function(cytoscape3) {
+        if (!cytoscape3) {
+          return;
+        }
+        cytoscape3("collection", "hierarchical", hierarchical2);
+      };
+      if (typeof module !== "undefined" && module.exports) {
+        module.exports = register;
+      }
+      if (typeof define !== "undefined" && define.amd) {
+        define("cytoscape-hierarchical", function() {
+          return register;
+        });
+      }
+      if (typeof cytoscape !== "undefined") {
+        register(cytoscape);
+      }
+    })();
+  });
+
+  // node_modules/cytoscape-markov-cluster/cytoscape-markov-cluster.js
+  var require_cytoscape_markov_cluster = __commonJS((exports, module) => {
+    (function() {
+      "use strict";
+      var defaults = {
+        expandFactor: 2,
+        inflateFactor: 2,
+        multFactor: 1,
+        maxIterations: 20,
+        attributes: [
+          function(edge) {
+            return 1;
+          }
+        ]
+      };
+      var setOptions = function(opts, options) {
+        for (var i in defaults) {
+          opts[i] = defaults[i];
+        }
+        for (var i in options) {
+          opts[i] = options[i];
+        }
+      };
+      var printMatrix = function(M) {
+        var n = Math.sqrt(M.length);
+        for (var i = 0; i < n; i++) {
+          var row = "";
+          for (var j = 0; j < n; j++) {
+            row += Number(M[i * n + j]).toFixed(3) + " ";
+          }
+          console.log(row);
+        }
+        console.log("");
+      };
+      var getSimilarity = function(edge, attributes) {
+        var total = 0;
+        for (var i = 0; i < attributes.length; i++) {
+          total += attributes[i](edge);
+        }
+        return total;
+      };
+      var addLoops = function(M, n, val) {
+        for (var i = 0; i < n; i++) {
+          M[i * n + i] = val;
+        }
+      };
+      var normalize = function(M, n) {
+        var sum;
+        for (var col = 0; col < n; col++) {
+          sum = 0;
+          for (var row = 0; row < n; row++) {
+            sum += M[row * n + col];
+          }
+          for (var row = 0; row < n; row++) {
+            M[row * n + col] = M[row * n + col] / sum;
+          }
+        }
+      };
+      var mmult = function(A, B, n) {
+        var C = new Array(n * n);
+        for (var i = 0; i < n; i++) {
+          for (var j = 0; j < n; j++) {
+            C[i * n + j] = 0;
+          }
+          for (var k = 0; k < n; k++) {
+            for (var j = 0; j < n; j++) {
+              C[i * n + j] += A[i * n + k] * B[k * n + j];
+            }
+          }
+        }
+        return C;
+      };
+      var expand = function(M, n, expandFactor) {
+        var _M = M.slice(0);
+        for (var p = 1; p < expandFactor; p++) {
+          M = mmult(M, _M, n);
+        }
+        return M;
+      };
+      var inflate = function(M, n, inflateFactor) {
+        var _M = new Array(n * n);
+        for (var i = 0; i < n * n; i++) {
+          _M[i] = Math.pow(M[i], inflateFactor);
+        }
+        normalize(_M, n);
+        return _M;
+      };
+      var hasConverged = function(M, _M, n2, roundFactor) {
+        for (var i = 0; i < n2; i++) {
+          var v1 = Math.round(M[i] * Math.pow(10, roundFactor)) / Math.pow(10, roundFactor);
+          var v2 = Math.round(_M[i] * Math.pow(10, roundFactor)) / Math.pow(10, roundFactor);
+          if (v1 !== v2) {
+            return false;
+          }
+        }
+        return true;
+      };
+      var assign = function(M, n, nodes, cy) {
+        var clusters = [];
+        for (var i = 0; i < n; i++) {
+          var cluster = [];
+          for (var j = 0; j < n; j++) {
+            if (Math.round(M[i * n + j] * 1e3) / 1e3 > 0) {
+              cluster.push(nodes[j]);
+            }
+          }
+          if (cluster.length !== 0) {
+            clusters.push(cy.collection(cluster));
+          }
+        }
+        return clusters;
+      };
+      var isDuplicate = function(c1, c2) {
+        for (var i = 0; i < c1.length; i++) {
+          if (!c2[i] || c1[i].id() !== c2[i].id()) {
+            return false;
+          }
+        }
+        return true;
+      };
+      var removeDuplicates = function(clusters) {
+        for (var i = 0; i < clusters.length; i++) {
+          for (var j = 0; j < clusters.length; j++) {
+            if (i != j && isDuplicate(clusters[i], clusters[j])) {
+              clusters.splice(j, 1);
+            }
+          }
+        }
+        return clusters;
+      };
+      var markovCluster2 = function(options) {
+        var nodes = this.nodes();
+        var edges = this.edges();
+        var cy = this.cy();
+        var opts = {};
+        setOptions(opts, options);
+        var id2position = {};
+        for (var i = 0; i < nodes.length; i++) {
+          id2position[nodes[i].id()] = i;
+        }
+        var n = nodes.length, n2 = n * n;
+        var M = new Array(n2), _M;
+        for (var i = 0; i < n2; i++) {
+          M[i] = 0;
+        }
+        for (var e = 0; e < edges.length; e++) {
+          var edge = edges[e];
+          var i = id2position[edge.source().id()];
+          var j = id2position[edge.target().id()];
+          var sim = getSimilarity(edge, opts.attributes);
+          M[i * n + j] += sim;
+          M[j * n + i] += sim;
+        }
+        addLoops(M, n, opts.multFactor);
+        normalize(M, n);
+        var isStillMoving = true;
+        var iterations = 0;
+        while (isStillMoving && iterations < opts.maxIterations) {
+          isStillMoving = false;
+          _M = expand(M, n, opts.expandFactor);
+          M = inflate(_M, n, opts.inflateFactor);
+          if (!hasConverged(M, _M, n2, 4)) {
+            isStillMoving = true;
+          }
+          iterations++;
+        }
+        var clusters = assign(M, n, nodes, cy);
+        clusters = removeDuplicates(clusters);
+        return clusters;
+      };
+      var register = function(cytoscape3) {
+        if (!cytoscape3) {
+          return;
+        }
+        cytoscape3("collection", "markovCluster", markovCluster2);
+      };
+      if (typeof module !== "undefined" && module.exports) {
+        module.exports = register;
+      }
+      if (typeof define !== "undefined" && define.amd) {
+        define("cytoscape-markov-cluster", function() {
+          return register;
+        });
+      }
+      if (typeof cytoscape !== "undefined") {
+        register(cytoscape);
+      }
+    })();
+  });
+
   // app.jsx
   var import_cytoscape = __toModule(require_cytoscape_cjs());
   var import_cytoscape_cise = __toModule(require_cytoscape_cise());
   var import_cytoscape_dagre = __toModule(require_cytoscape_dagre());
   var import_cytoscape_cola = __toModule(require_cytoscape_cola());
   var import_cytoscape_klay = __toModule(require_cytoscape_klay());
+  var import_cytoscape_hierarchical = __toModule(require_cytoscape_hierarchical());
+  var import_cytoscape_markov_cluster = __toModule(require_cytoscape_markov_cluster());
   globalThis.cytoscape = import_cytoscape.default;
   import_cytoscape.default.use(import_cytoscape_cise.default);
   import_cytoscape.default.use(import_cytoscape_dagre.default);
   import_cytoscape.default.use(import_cytoscape_cola.default);
   import_cytoscape.default.use(import_cytoscape_klay.default);
+  import_cytoscape.default.use(import_cytoscape_hierarchical.default);
+  import_cytoscape.default.use(import_cytoscape_markov_cluster.default);
 })();
 //# sourceMappingURL=cytoscape.bundle.js.map
