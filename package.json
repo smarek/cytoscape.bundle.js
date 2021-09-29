@@ -6,6 +6,7 @@
     "cytoscape-dagre": "^2.3.2",
     "cytoscape-hierarchical": "cytoscape/cytoscape.js-hierarchical",
     "cytoscape-klay": "^3.1.4",
-    "cytoscape-markov-cluster": "cytoscape/cytoscape.js-markov-cluster"
+    "cytoscape-markov-cluster": "cytoscape/cytoscape.js-markov-cluster",
+    "cytoscape-svg": "^0.3.1"
   }
 }
