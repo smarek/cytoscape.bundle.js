@@ -9,6 +9,12 @@ avsdf-base@^1.0.0:
   dependencies:
     layout-base "^1.0.0"
 
+"avsdf-base@https://github.com/iVis-at-Bilkent/avsdf-base#unstable":
+  version "1.0.0"
+  resolved "https://github.com/iVis-at-Bilkent/avsdf-base#01d4dd91a5cf1c72ee633663c15be7c0b4d8d043"
+  dependencies:
+    layout-base "https://github.com/iVis-at-Bilkent/layout-base#unstable"
+
 cose-base@^1.0.0:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/cose-base/-/cose-base-1.0.3.tgz#650334b41b869578a543358b80cda7e0abe0a60a"
@@ -22,6 +28,13 @@ cytoscape-cise@^1.0.0:
   integrity sha512-Y1NPaUo4fN992XJTEIDd4oPVkv8BsDSrFBHSB38caDu8PcmHUyl8/Q8K5wvqdTeti1mLR9IX4/o2RyuObh+P7Q==
   dependencies:
     avsdf-base "^1.0.0"
+    cose-base "^1.0.0"
+
+"cytoscape-cise@https://github.com/iVis-at-Bilkent/cytoscape.js-cise#develop":
+  version "1.0.0"
+  resolved "https://github.com/iVis-at-Bilkent/cytoscape.js-cise#3d090374c2440f10fa4369410e9477adafd7690a"
+  dependencies:
+    avsdf-base "https://github.com/iVis-at-Bilkent/avsdf-base#unstable"
     cose-base "^1.0.0"
 
 cytoscape-cola@^2.4.0:
@@ -59,9 +72,9 @@ cytoscape-svg@^0.3.1:
   integrity sha512-CaU6sUWIcCJcOWw+G1ZWHqC7ssHwXabWVo6okyIPUy3veEKoodZ3Ud2AG3Zbd8vFl8Z1W10hzyXnyy25aBXFXA==
 
 cytoscape@^3.17.1:
-  version "3.19.0"
-  resolved "https://registry.yarnpkg.com/cytoscape/-/cytoscape-3.19.0.tgz#b3e3136f823ca00a1c7752741c2a349e52545f57"
-  integrity sha512-DANM8bM4EuSTS3DraPK0nLSmzANrzQ2g/cb3u5Biexu/NVsJA+xAoXVvWHRIHDXz3y0gpMjTPv3Z13ZbkNrEPw==
+  version "3.19.1"
+  resolved "https://registry.yarnpkg.com/cytoscape/-/cytoscape-3.19.1.tgz#034fb5e5de7e6b9b7c948a48da8ab7037d430f69"
+  integrity sha512-fQSymoCzmDF5dejZqv94WXQUnI3cVZfaHWFQR+Q9RhJ6LzEs7dtkwgFYaoklsbXcrXz0uCGx4i3vQ0FiuOUu9Q==
   dependencies:
     heap "^0.2.6"
     lodash.debounce "^4.0.8"
@@ -130,6 +143,10 @@ layout-base@^1.0.0:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/layout-base/-/layout-base-1.0.2.tgz#1291e296883c322a9dd4c5dd82063721b53e26e2"
   integrity sha512-8h2oVEZNktL4BH2JCOI90iD1yXwL6iNW7KcCKT2QZgQJR2vbqDsldCTPRU9NifTCqHZci57XvQQ15YTu+sTYPg==
+
+"layout-base@https://github.com/iVis-at-Bilkent/layout-base#unstable":
+  version "2.0.0"
+  resolved "https://github.com/iVis-at-Bilkent/layout-base#54d92ef6c8584c205cac1b0ebe3feb8371dcd1cb"
 
 lodash.debounce@^4.0.8:
   version "4.0.8"

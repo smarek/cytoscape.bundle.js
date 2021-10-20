@@ -1,7 +1,7 @@
 {
   "dependencies": {
     "cytoscape": "^3.17.1",
-    "cytoscape-cise": "^1.0.0",
+    "cytoscape-cise": "https://github.com/iVis-at-Bilkent/cytoscape.js-cise#develop",
     "cytoscape-cola": "^2.4.0",
     "cytoscape-dagre": "^2.3.2",
     "cytoscape-hierarchical": "cytoscape/cytoscape.js-hierarchical",
